@@ -72,8 +72,12 @@ def tokenizer_lemma_tags(query):
     return tokenizer(query, with_tags=True, only_tags=False)
 
 
-def create_dataset(source_folder):
-    label_field = Field(sequential=False, use_vocab=False, batch_first=True, dtype=torch_long, is_target=True)
+def create_dataset(source_folder, torch_type):
+    if torch_type == 'long':
+        torch_type = torch_long
+    else:
+        torch_type = torch_float
+    label_field = Field(sequential=False, use_vocab=False, batch_first=True, dtype=torch_type, is_target=True)
     text_field = Field(tokenize=tokenizer_only_tags,  include_lengths=True, batch_first=True)
     fields = [('query', text_field), ('label', label_field), ('answer', label_field)]
 
