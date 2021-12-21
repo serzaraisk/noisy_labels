@@ -18,7 +18,7 @@ def create_embed_matrix(vocab, embed_model):
 def create_emb_layer(weights_matrix, non_trainable=False):
     num_embeddings, embedding_dim = weights_matrix.shape
     emb_layer = nn.Embedding(num_embeddings, embedding_dim)
-    emb_layer.load_state_dict({'weight': torch.from_numpy(weights_matrix).})
+    emb_layer.load_state_dict({'weight': torch.from_numpy(weights_matrix)})
     if non_trainable:
         emb_layer.weight.requires_grad = False
 
