@@ -1,4 +1,5 @@
 from torch import float as torch_float
+from torch import long as torch_long
 from torchtext.legacy.data import Field, TabularDataset, BucketIterator, RawField, Iterator
 import numpy as np
 import pymorphy2
@@ -72,7 +73,7 @@ def tokenizer_lemma_tags(query):
 
 
 def create_dataset(source_folder):
-    label_field = Field(sequential=False, use_vocab=False, batch_first=True, dtype=torch_float, is_target=True)
+    label_field = Field(sequential=False, use_vocab=False, batch_first=True, dtype=torch_long, is_target=True)
     text_field = Field(tokenize=tokenizer_only_tags,  include_lengths=True, batch_first=True)
     fields = [('query', text_field), ('label', label_field), ('answer', label_field)]
 
