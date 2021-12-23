@@ -27,12 +27,13 @@ def load_metrics(load_path, device):
 
     return state_dict['train_loss_list'], state_dict['valid_loss_list'], state_dict['global_steps_list']
 
-def plot_metrics(destination_folder, device):
+def plot_metrics(destination_folder, model_name, device):
     train_loss_list, valid_loss_list, global_steps_list = load_metrics(destination_folder + '/metrics.pt', device)
     plt.plot(global_steps_list, train_loss_list, label='Train')
     plt.plot(global_steps_list, valid_loss_list, label='Valid')
     plt.xlabel('Global Steps')
     plt.ylabel('Loss')
+    plt.title('Train and Val loss for model: ' + model_name)
     plt.legend()
     plt.show() 
     
@@ -58,6 +59,9 @@ def calculate_threshhold(model, model_name, test_loader, device, use_ground_trut
             query_length = query_length[mask]
             answer = answer[mask]
             output = model(query, query_length.cpu())
+
+            output = output.cpu()
+            answer = answer.cpu()
             
             y_pred.extend(output.tolist())
             y_true.extend(answer.tolist())
@@ -95,6 +99,9 @@ def evaluate(model, model_name, test_loader, device, version='title', threshold=
             output = model(query, query_length.cpu())
             
             output = (output > threshold).int()
+
+            output = output.cpu()
+            answer = answer.cpu()
             y_pred.extend(output.tolist())
             y_true.extend(answer.tolist())
             
@@ -102,9 +109,10 @@ def evaluate(model, model_name, test_loader, device, version='title', threshold=
     print(f'Classification Report for model {model_name}:')
     print(classification_report(y_true, y_pred, labels=[1,0], digits=4))
     
-    cm = confusion_matrix(y_true, y_pred, labels=[1,0])
+    cm = confusion_matrix(y_true, y_pred, labels=[0,1])
     ax= plt.subplot()
     sns.heatmap(cm, annot=True, ax = ax, cmap='Blues', fmt="d")
+    plt.show()
 
     ax.set_title('Confusion Matrix for ' + model_name)
 
@@ -140,10 +148,11 @@ def print_comparison(models, figsize):
     plt.ylim([0, 1])
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
-    for model in models:
+    for model in sorted(models):
         fpr, tpr, thresholds = models[model]['roc_auc_curve']
         roc_auc_score = models[model]['roc_auc_score']
-        plt.plot(fpr, tpr, label = 'AUC = %0.2f' % roc_auc_score)
+        label = f'AUC_{model}  = {roc_auc_score:0.2f}'
+        plt.plot(fpr, tpr, label = label)
     plt.legend(loc = 'lower right')   
 
     plt.subplot(1,2,2)
@@ -152,10 +161,10 @@ def print_comparison(models, figsize):
     plt.ylim([0, 1])
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
-    for model in models:
+    for model in sorted(models):
         fpr, tpr, thresholds = models[model]['pr_curve']
         pr_area = models[model]['pr_area']
-        plt.plot(fpr, tpr, label = 'PR_auc = %0.2f' % pr_area)
+        label = f'PR_auc_{model}  = {pr_area:0.2f}'
+        plt.plot(fpr, tpr, label = label)
     plt.legend(loc = 'lower right') 
     plt.show()
-    

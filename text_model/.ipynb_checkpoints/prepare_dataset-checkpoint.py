@@ -45,9 +45,9 @@ def train_test_split_df(df, destination_folder, train_test_ratio, train_valid_ra
     df_all = pd.concat([df_real, df_fake], ignore_index=True, sort=False)
 
     # Write preprocessed data
-    if os.path.isdir('data'):
-        shutil.rmtree('data')
-    os.mkdir('data')
+    if os.path.isdir(destination_folder):
+        shutil.rmtree(destination_folder)
+    os.mkdir(destination_folder)
     df_train.to_csv(destination_folder + 'train.csv', index=False)
     df_valid.to_csv(destination_folder + 'valid.csv', index=False)
     df_test.to_csv(destination_folder + 'test.csv', index=False)

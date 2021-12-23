@@ -136,3 +136,18 @@ def train(model,
     
     save_metrics(file_path + '/' + model_name + '/metrics.pt', train_loss_list, valid_loss_list, global_steps_list)
     print('Finished Training!')
+    
+def train_outer(model, model_name, epochs=10, lr=0.001, use_ground_for_train=False, use_ground_for_valid=False):
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+    train_model.train(model=model,
+        model_name= model_name,
+                optimizer=optimizer, 
+                device=DEVICE, 
+                file_path=DESTINATION_FOLDER,  
+                train_loader=train_iter,
+                valid_loader=valid_iter, 
+                num_epochs=epochs,
+                criterion=loss,
+                 use_ground_for_train=False,
+                use_ground_for_valid=False)
+    plot_metrics(DESTINATION_FOLDER + '/' + model_name, model_name, DEVICE) 

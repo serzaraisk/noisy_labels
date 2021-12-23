@@ -92,11 +92,11 @@ def create_dataset(source_folder, torch_type):
     
     return train, valid, test, text_field.vocab
     
-def create_iterators(train_dataset, valid_dataset, test_dataset, device):
-    train_iter = Iterator(train_dataset, batch_size=32, sort_key=lambda x: len(x.text),
+def create_iterators(train_dataset, valid_dataset, test_dataset, device, batch_size):
+    train_iter = Iterator(train_dataset, batch_size=batch_size, sort_key=lambda x: len(x.text),
                                 device=device, sort=False, sort_within_batch=False)
-    valid_iter = Iterator(valid_dataset, batch_size=32, sort_key=lambda x: len(x.text),
+    valid_iter = Iterator(valid_dataset, batch_size=batch_size, sort_key=lambda x: len(x.text),
                                 device=device, sort=False, sort_within_batch=False)
-    test_iter = Iterator(test_dataset, batch_size=32, sort_key=lambda x: len(x.text),
+    test_iter = Iterator(test_dataset, batch_size=batch_size, sort_key=lambda x: len(x.text),
                                 device=device, sort=False, sort_within_batch=False)
     return train_iter, valid_iter, test_iter
