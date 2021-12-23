@@ -31,14 +31,14 @@ def create_embed_model(model_path):
 
 class LSTM(nn.Module):
 
-    def __init__(self, weights_matrix, dimension=128):
+    def __init__(self, weights_matrix, dimension=128, num_layers=4):
         super(LSTM, self).__init__()
         
         self.embedding, num_embeddings, embedding_dim = create_emb_layer(weights_matrix, True)
         self.dimension = dimension
         self.lstm = nn.LSTM(input_size=300,
                             hidden_size=dimension,
-                            num_layers=1,
+                            num_layers=num_layers,
                             batch_first=True,
                             bidirectional=True)
         self.drop = nn.Dropout(p=0.5)

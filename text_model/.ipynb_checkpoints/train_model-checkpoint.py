@@ -3,6 +3,7 @@ import torch.optim as optim
 import torch
 import os
 import shutil
+from tqdm import tqdm
 
 def save_checkpoint(save_path, model, optimizer, valid_loss):
 
@@ -33,6 +34,7 @@ def save_metrics(save_path, train_loss_list, valid_loss_list, global_steps_list)
 # Training Function
 
 def train(model,
+          model_name,
           optimizer,
           device,
           file_path,
@@ -40,7 +42,9 @@ def train(model,
           valid_loader,
           criterion = nn.BCELoss(),
           num_epochs = 5,
-          best_valid_loss = float("Inf")):
+          best_valid_loss = float("Inf"),
+         use_ground_for_train=False,
+         use_ground_for_valid=False):
     
     # initialize running values
     running_loss = 0.0
@@ -53,12 +57,16 @@ def train(model,
 
     # training loop
     model.train()
-    for epoch in range(num_epochs):
+    for epoch in tqdm(range(num_epochs)):
         for batch in train_loader:
             query, query_length = batch.query
             query = query.to(device)
             query_length = query_length.to(device)
-            labels = batch.label.to(device)
+            if not use_ground_for_train:
+                labels = batch.label.to(device)
+            else:
+                labels = batch.answer.to(device)
+        
              
             # remove 0 length sentances
             mask = query_length != 0
@@ -86,8 +94,10 @@ def train(model,
                         query, query_length = batch.query
                         query = query.to(device)
                         query_length = query_length.to(device)
-                        labels = batch.label.to(device)
-                        answer = batch.answer.to(device)
+                        if not use_ground_for_train:
+                            labels = batch.label.to(device)
+                        else:
+                            labels = batch.answer.to(device)
                         
                         mask = query_length != 0
                         query = query[mask]
@@ -118,14 +128,11 @@ def train(model,
                 # checkpoint
                 if best_valid_loss > average_valid_loss:
                     best_valid_loss = average_valid_loss
-                    if os.path.isdir(file_path):
-                        shutil.rmtree(file_path)
-                    os.mkdir(file_path)
-                    save_checkpoint(file_path + '/model.pt', model, optimizer, best_valid_loss)
-                    save_metrics(file_path + '/metrics.pt', train_loss_list, valid_loss_list, global_steps_list)
+                    if os.path.isdir(file_path + '/' + model_name):
+                        shutil.rmtree(file_path + '/' + model_name)
+                    os.mkdir(file_path + '/' + model_name)
+                    save_checkpoint(file_path + '/' + model_name + '/model.pt', model, optimizer, best_valid_loss)
+                    save_metrics(file_path + '/' + model_name + '/metrics.pt', train_loss_list, valid_loss_list, global_steps_list)
     
-    save_metrics(file_path + '/metrics.pt', train_loss_list, valid_loss_list, global_steps_list)
+    save_metrics(file_path + '/' + model_name + '/metrics.pt', train_loss_list, valid_loss_list, global_steps_list)
     print('Finished Training!')
-
-
-
