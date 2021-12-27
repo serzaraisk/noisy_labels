@@ -66,13 +66,14 @@ def create_datasets(folder_name, image_size):
     
     
     
-    train_dataset = IMagesDataset(folder_name + 'train','lookup_tables/train.csv', transform=train_transform)
-    val_dataset = IMagesDataset(folder_name + 'val','lookup_tables/valid.csv', transform=valid_test_transform)
-    test_dataset = IMagesDataset(folder_name + 'test','lookup_tables/test.csv', transform=valid_test_transform)
+    train_dataset = IMagesDataset(folder_name + 'image_dataset/train',folder_name + 'lookup_tables/train.csv', transform=train_transform)
+    val_dataset = IMagesDataset(folder_name + 'image_dataset/val',folder_name + 'lookup_tables/valid.csv', transform=valid_test_transform)
+    test_dataset = IMagesDataset(folder_name + 'image_dataset/test',folder_name + 'lookup_tables/test.csv', transform=valid_test_transform)
     return train_dataset, val_dataset, test_dataset
 
 def create_dataloaders(train_dataset, val_dataset, test_dataset, batch_size, num_workers):
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
     test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
+    
     return train_dataloader, val_dataloader, test_dataloader

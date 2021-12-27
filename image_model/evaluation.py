@@ -3,6 +3,8 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
+from tqdm import tqdm
+import torch.nn.functional as F
 
 def load_checkpoint(load_path, model):
     model.load_state_dict(torch.load(load_path))

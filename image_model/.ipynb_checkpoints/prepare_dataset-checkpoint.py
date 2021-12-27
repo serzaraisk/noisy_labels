@@ -4,6 +4,7 @@ from nile.api.v1 import (
 )
 
 import pandas as pd
+import numpy as np
 
 import requests as r
 import os
@@ -64,7 +65,7 @@ def train_test_split_df(df, destination_folder, train_test_ratio, train_valid_ra
     # Train-valid split
     df_bad_train, df_bad_valid = train_test_split(df_bad_full_train, train_size = train_valid_ratio, random_state = seed)
     df_ok_train, df_ok_valid = train_test_split(df_ok_full_train, train_size = train_valid_ratio, random_state = seed)
-    df_good_train, df_good_valid = train_test_split(df_ok_full_train, train_size = train_valid_ratio, random_state = seed)
+    df_good_train, df_good_valid = train_test_split(df_good_full_train, train_size = train_valid_ratio, random_state = seed)
 
     # Concatenate splits of different labels
     df_train = pd.concat([df_bad_train, df_ok_train, df_good_train], ignore_index=True, sort=False)
@@ -107,8 +108,10 @@ def load_folder(df, folder_name):
             if not os.path.exists('image_dataset' + folder_name + '/' + key):
                 os.makedirs('image_dataset' + folder_name + '/' + key)
             try:
+                _ = np.array(img).shape[2]
                 img.save('image_dataset' + folder_name + '/' + key + '/' + str(row[0])  +  '.jpg')
             except OSError:
+                _ = np.array(img).shape[2]
                 img = img.convert('RGB')
                 img.save('image_dataset' + folder_name + '/' + key + '/' + str(row[0])  + '.jpg')
         except:
