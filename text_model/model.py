@@ -61,5 +61,4 @@ class LSTM(nn.Module):
         text_fea = self.fc(text_fea)
         text_fea = torch.squeeze(text_fea, 1)
         text_out = torch.sigmoid(text_fea)
-
         return text_out
